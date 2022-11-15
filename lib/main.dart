@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:otp/otp.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,20 +13,33 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(primarySwatch: Colors.blue),
-        home: const MyHomePage(title: 'Flutter Demo Home Page'));
+        home: MyHomePage());
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
-
-  final String title;
+  final _codeController = TextEditingController();
+  MyHomePage({super.key});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
+
+  void _checkCode() {
+    final secret = _codeController.text;
+    final code = OTP.generateTOTPCodeString(
+        secret, DateTime.now().millisecondsSinceEpoch);
+    print('code= $code');
+  }
 }
 
 class _MyHomePageState extends State<MyHomePage> {
   @override
-  Widget build(BuildContext context) => Container();
+  Widget build(BuildContext context) => Material(
+          child: Column(
+        children: [
+          TextField(controller: widget._codeController),
+          const Spacer(),
+          TextButton(onPressed: widget._checkCode, child: const Text("Check"))
+        ],
+      ));
 }
