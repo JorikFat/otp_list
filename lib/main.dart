@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:otp/otp.dart';
+import 'package:otp_list/list/widget.dart';
 import 'package:otp_list/qr_camera.dart';
+
+import 'list/view_model.dart';
 
 void main() {
   runApp(const MyApp());
@@ -34,20 +37,23 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final ViewModel _listViewModel = ViewModel();
+
   @override
   Widget build(BuildContext context) => Material(
-          child: Column(
+          child: SafeArea(
+              child: Column(
         children: [
           TextField(controller: widget._codeController),
-          const Spacer(),
+          Expanded(child: CodesListWidget(_listViewModel)),
           TextButton(onPressed: widget._checkCode, child: const Text("Check")),
           TextButton(onPressed: _mobileScan, child: const Text("Mobile Scan"))
         ],
-      ));
+      )));
 
   void _mobileScan() async {
     var result = await Navigator.push(context, QRScreen2.route());
     if (result == null) return;
-    widget._codeController.text = result as String;
+    _listViewModel.addCode(result as String);
   }
 }
