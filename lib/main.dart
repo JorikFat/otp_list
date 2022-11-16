@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:otp/otp.dart';
 import 'package:otp_list/qr_camera.dart';
-import 'package:otp_list/qr_camera2.dart';
 
 void main() {
   runApp(const MyApp());
@@ -42,15 +41,13 @@ class _MyHomePageState extends State<MyHomePage> {
           TextField(controller: widget._codeController),
           const Spacer(),
           TextButton(onPressed: widget._checkCode, child: const Text("Check")),
-          TextButton(onPressed: _navigateToQR, child: const Text("Start Scan")),
           TextButton(onPressed: _mobileScan, child: const Text("Mobile Scan"))
         ],
       ));
 
-  void _navigateToQR() {
-    Navigator.push(
-        context, MaterialPageRoute(builder: (_) => const QRCamera()));
+  void _mobileScan() async {
+    var result = await Navigator.push(context, QRScreen2.route());
+    if (result == null) return;
+    widget._codeController.text = result as String;
   }
-
-  void _mobileScan() => Navigator.push(context, QRScreen2.route());
 }
