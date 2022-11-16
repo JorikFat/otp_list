@@ -28,6 +28,7 @@ class _State extends State<QRCamera> {
 
   @override
   Widget build(BuildContext context) {
+    // return Material(child: _buildQrView(context));
     return Scaffold(
       body: Column(
         children: <Widget>[
