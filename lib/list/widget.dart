@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:otp_list/list/view_model.dart';
 
 class CodesListWidget extends StatefulWidget {
-  final ViewModel _viewModel;
-  const CodesListWidget(this._viewModel, {super.key});
+  final ViewModel _viewModel = ViewModel();
+  CodesListWidget({super.key});
+
+  void addCode(String code) => _viewModel.addCode(code);
 
   @override
   State<StatefulWidget> createState() => _State();
