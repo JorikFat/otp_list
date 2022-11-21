@@ -1,35 +1,37 @@
 import 'package:bloc/bloc.dart';
+import 'package:otp_list/list/model.dart';
 import 'package:otp_list/list/storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ViewModel {
   final Storage _storage;
-  final ListCubit listCubit = ListCubit();
+  List<String> _codes = List.empty();
+  final ListCubit itemsCubit = ListCubit();
 
   ViewModel(SharedPreferences prefs) : _storage = EncryptedStorage(prefs) {
-    var items = _storage.read();
-    listCubit.init(items);
+    _codes = _storage.read();
+    itemsCubit.init(_codes.map((it) => OtpItem.fromToken(it)).toList());
   }
 
   void addCode(String code) {
-    listCubit.add(code);
-    _storage.save(listCubit.state);
+    itemsCubit.add(OtpItem.fromToken(code));
+    _storage.save(_codes..add(code));
   }
 
-  void removeCode(String code) {
-    listCubit.remove(code);
-    _storage.save(listCubit.state);
+  void removeCode(OtpItem otpItem) {
+    itemsCubit.remove(otpItem);
+    _storage.save(_codes..remove(otpItem.code));
   }
 }
 
-class ListCubit extends Cubit<List<String>> {
+class ListCubit extends Cubit<List<OtpItem>> {
   ListCubit() : super(List.empty());
 
-  void init(List<String> codes) => emit(codes);
+  void init(List<OtpItem> codes) => emit(codes);
 
-  void add(String code) => emit(List.from(state)..add(code));
+  void add(OtpItem code) => emit(List.from(state)..add(code));
 
-  void remove(String code) => emit(List.from(state)..remove(code));
+  void remove(OtpItem code) => emit(List.from(state)..remove(code));
 }
 
 abstract class Storage {
