@@ -5,11 +5,12 @@ import 'package:otp_list/qr_camera.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'list/view_model.dart';
+import 'timeout_screen.dart';
 
 late final SharedPreferences configs;
 
 void main() {
-  runApp(const MyApp());
+  expireTimeout() ? runApp(const TimeoutScreen()) : runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
