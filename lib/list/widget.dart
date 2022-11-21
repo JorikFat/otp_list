@@ -16,13 +16,12 @@ class _State extends State<CodesListWidget> {
       initialData: widget._viewModel.itemsCubit.state,
       stream: widget._viewModel.itemsCubit.stream,
       builder: (_, snap) => Padding(
-            padding: const EdgeInsets.all(16),
-            child: ListView.separated(
-                itemCount: widget._viewModel.itemsCubit.state.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 16),
-                itemBuilder: (_, index) =>
-                    OtpWidget(widget._viewModel.itemsCubit.state[index])),
-          ));
+          padding: const EdgeInsets.all(16),
+          child: ListView.separated(
+              itemCount: widget._viewModel.itemsCubit.state.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 16),
+              itemBuilder: (_, index) =>
+                  OtpWidget(widget._viewModel.itemsCubit.state[index]))));
 }
 
 class OtpWidget extends StatelessWidget {
@@ -31,8 +30,19 @@ class OtpWidget extends StatelessWidget {
   const OtpWidget(this._otp, {super.key});
 
   @override
-  Widget build(BuildContext context) => Column(children: [
-        Row(children: [Text(_otp.email), const Spacer(), Text(_otp.issuer)]),
-        const Text("CODE", style: TextStyle(fontSize: 30, color: Colors.black))
-      ]);
+  Widget build(BuildContext context) => Container(
+      decoration: const BoxDecoration(
+          color: Color.fromARGB(31, 65, 57, 57),
+          borderRadius: BorderRadius.all(Radius.circular(8))),
+      child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(children: [
+            Row(children: [
+              Text(_otp.email),
+              const Spacer(),
+              Text(_otp.issuer)
+            ]),
+            Text(_otp.codeByTime(DateTime.now()),
+                style: const TextStyle(fontSize: 30, color: Colors.black))
+          ])));
 }
