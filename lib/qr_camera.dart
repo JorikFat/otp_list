@@ -22,8 +22,9 @@ class _State extends State<QRScreen2> {
             } else {
               final String code = barcode.rawValue!;
               debugPrint('Barcode found! $code');
-              await _showAlertDialog(
-                  code, (data) => Navigator.pop(context, data));
+              Navigator.pop(context, code);
+              // await _showAlertDialog(
+              //     code, (data) => Navigator.pop(context, data));
             }
           }));
 

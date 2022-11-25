@@ -19,6 +19,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'Flutter Demo',
         theme: ThemeData(primarySwatch: Colors.blue),
         home: const InitScreen());
@@ -71,16 +72,19 @@ class _MyHomePageState extends State<MyHomePage> {
   final ViewModel _listViewModel = ViewModel(configs);
 
   @override
-  Widget build(BuildContext context) => Material(
-          child: SafeArea(
-              child: Column(
+  Widget build(BuildContext context) => Scaffold(
+      appBar: AppBar(title: const Text('TOTP codes')),
+      body: SafeArea(
+          child: Column(
         children: [
-          TextField(controller: widget._codeController),
           Expanded(child: CodesListWidget(_listViewModel)),
-          TextButton(onPressed: widget._checkCode, child: const Text("Check")),
-          TextButton(onPressed: _mobileScan, child: const Text("Mobile Scan"))
         ],
-      )));
+      )),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _mobileScan,
+        tooltip: 'Scan Code',
+        child: const Icon(Icons.qr_code),
+      ));
 
   void _mobileScan() async {
     var result = await Navigator.push(context, QRScreen2.route());

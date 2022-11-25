@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:otp_list/list/model.dart';
 import 'package:otp_list/list/view_model.dart';
@@ -11,6 +13,14 @@ class CodesListWidget extends StatefulWidget {
 }
 
 class _State extends State<CodesListWidget> {
+  @override
+  void initState() {
+    Timer.periodic(const Duration(seconds: 30), (_) {
+      setState(() {});
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) => StreamBuilder<List<OtpItem>>(
       initialData: widget._viewModel.itemsCubit.state,
@@ -36,7 +46,8 @@ class OtpWidget extends StatelessWidget {
           borderRadius: BorderRadius.all(Radius.circular(8))),
       child: Padding(
           padding: const EdgeInsets.all(16),
-          child: Column(children: [
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Row(children: [
               Text(_otp.email),
               const Spacer(),
