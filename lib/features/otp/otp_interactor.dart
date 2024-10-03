@@ -8,20 +8,32 @@ import 'package:otp_list/features/otp/list/otp_list_model.dart';
 import 'package:otp_list/features/otp/list/otp_list_presenter.dart';
 import 'package:otp_list/features/otp/otp.dart';
 import 'package:otp_list/features/otp/otp_navigator.dart';
+import 'package:otp_list/features/timer/indicator/timer_indicator_presenter.dart';
+import 'package:otp_list/features/timer/otp_timer.dart';
 
 class OtpInteractor {
   final OtpNavigator navigator;
   final ValueNotifier<bool> isReady = ValueNotifier<bool>(false);
   final OtpController controller = OtpController(OtpStorage(configs));
   late final OtpListPresenter list;
+  late final TimerIndicatorPresenter indicator;
+  final OtpTimer timer = OtpTimer();
 
   OtpInteractor({
     required this.navigator,
   });
 
   Future<void> start() async {
-    final List<Otp> otps = await controller.getLists();
-    list = OtpListPresenter(otps.map(_fromEntity).toList());
+    await controller.initialize();
+    list = OtpListPresenter(_getModelsList());
+    indicator = TimerIndicatorPresenter('');
+    timer.listen((count) {
+      indicator.update(count);
+      if (count == 30) {
+        list.update(_getModelsList());
+      }
+    });
+    timer.start();
     isReady.value = true;
   }
 
@@ -32,6 +44,8 @@ class OtpInteractor {
       list.add(_fromEntity(newOtp));
     });
   }
+
+  List<OtpModel> _getModelsList() => controller.codes.map(_fromEntity).toList();
 
   OtpModel _fromEntity(Otp entity) {
     final mills = DateTime.now().millisecondsSinceEpoch;

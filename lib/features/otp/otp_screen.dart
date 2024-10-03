@@ -3,6 +3,7 @@ import 'package:otp_list/core/consts.dart';
 import 'package:otp_list/features/otp/list/otp_list_component.dart';
 import 'package:otp_list/features/otp/otp_interactor.dart';
 import 'package:otp_list/features/otp/otp_navigator.dart';
+import 'package:otp_list/features/timer/indicator/timer_indicator_component.dart';
 
 class OtpScreen extends StatefulWidget {
   const OtpScreen({super.key});
@@ -24,24 +25,27 @@ class _State extends State<OtpScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(APP_NAME),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: interactor.toScan,
-        tooltip: 'Scan Code',
-        child: const Icon(Icons.qr_code),
-      ),
-      body: ValueListenableBuilder<bool>(
-        valueListenable: interactor.isReady,
-        builder: (context, value, _) {
-          return value
+    return ValueListenableBuilder<bool>(
+      valueListenable: interactor.isReady,
+      builder: (context, value, _) {
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text(APP_NAME),
+            backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+            actions: [
+              if (value) TimerIndicatorComponent(interactor.indicator),
+            ],
+          ),
+          floatingActionButton: FloatingActionButton(
+            onPressed: interactor.toScan,
+            tooltip: 'Scan Code',
+            child: const Icon(Icons.qr_code),
+          ),
+          body: value
               ? OtpListComponent(interactor.list)
-              : const Center(child: Text("Not ready"));
-        },
-      ),
+              : const SizedBox.shrink(),
+        );
+      },
     );
   }
 }

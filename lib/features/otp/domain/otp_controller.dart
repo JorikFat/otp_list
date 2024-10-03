@@ -8,10 +8,9 @@ class OtpController {
 
   OtpController(this._storage);
 
-  Future<List<Otp>> getLists() async {
+  Future<void> initialize() async {
     final savedCodes = await _storage.read();
     savedCodes?.let((it) => codes.addAll(it.map((it) => it.otp)));
-    return codes;
   }
 
   //TODO: throw duplicate exception
