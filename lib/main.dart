@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:otp/otp.dart';
+import 'package:otp_list/core/consts.dart';
+import 'package:otp_list/core/core.dart';
+import 'package:otp_list/features/scanner/scanner_screen.dart';
 import 'package:otp_list/list/widget.dart';
-import 'package:otp_list/qr_camera.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'list/view_model.dart';
-import 'timeout_screen.dart';
 
-late final SharedPreferences configs;
-
-void main() {
-  expireTimeout() ? runApp(const TimeoutScreen()) : runApp(const MyApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  configs = await SharedPreferences.getInstance();
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -19,38 +20,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Flutter Demo',
-        theme: ThemeData(primarySwatch: Colors.blue),
-        home: const InitScreen());
+      title: APP_NAME,
+      theme: ThemeData(primarySwatch: Colors.blue),
+      home: MyHomePage(),
+    );
   }
-}
-
-class InitScreen extends StatefulWidget {
-  const InitScreen({Key? key}) : super(key: key);
-
-  @override
-  State<StatefulWidget> createState() => _InitState();
-}
-
-class _InitState extends State<InitScreen> {
-  @override
-  void initState() {
-    super.initState();
-    asyncInit();
-  }
-
-  void asyncInit() async {
-    SharedPreferences.getInstance().then((value) {
-      configs = value;
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (_) => MyHomePage()));
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) =>
-      const Material(child: Center(child: CircularProgressIndicator()));
 }
 
 class MyHomePage extends StatefulWidget {
@@ -87,7 +61,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ));
 
   void _mobileScan() async {
-    var result = await Navigator.push(context, QRScreen2.route());
+    var result = await Navigator.push(context, ScannerScreen.route);
     if (result == null) return;
     _listViewModel.addCode(result as String);
   }
