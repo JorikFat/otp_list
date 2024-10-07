@@ -1,7 +1,11 @@
+import 'dart:async';
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:otp/otp.dart';
 import 'package:otp_list/core/core.dart';
 import 'package:otp_list/core/extensions.dart';
+import 'package:otp_list/features/otp/domain/duplicate_exception.dart';
 import 'package:otp_list/features/otp/domain/otp_controller.dart';
 import 'package:otp_list/features/otp/domain/otp_storage.dart';
 import 'package:otp_list/features/otp/list/otp_list_model.dart';
@@ -16,8 +20,11 @@ class OtpInteractor {
   final ValueNotifier<bool> isReady = ValueNotifier<bool>(false);
   final OtpController controller = OtpController(OtpStorage(configs));
   late final OtpListPresenter list;
-  late final TimerIndicatorPresenter indicator;
+  final indicator = TimerIndicatorPresenter('');
   final OtpTimer timer = OtpTimer();
+  final _messages = StreamController<String>.broadcast();
+
+  Stream<String> get messages => _messages.stream;
 
   OtpInteractor({
     required this.navigator,
@@ -26,12 +33,9 @@ class OtpInteractor {
   Future<void> start() async {
     await controller.initialize();
     list = OtpListPresenter(_getModelsList());
-    indicator = TimerIndicatorPresenter('');
     timer.listen((count) {
       indicator.update(count);
-      if (count == 30) {
-        list.update(_getModelsList());
-      }
+      if (count == 30) list.update(_getModelsList());
     });
     timer.start();
     isReady.value = true;
@@ -40,8 +44,13 @@ class OtpInteractor {
   void toScan() async {
     final newCode = await navigator.scan();
     newCode?.let((it) async {
-      final Otp newOtp = await controller.add(it);
-      list.add(_fromEntity(newOtp));
+      try {
+        final Otp newOtp = await controller.add(it);
+        list.add(_fromEntity(newOtp));
+      } on DuplicateException {
+        log('throw duplicate');
+        _messages.add("Такой OTP уже есть в списке");
+      }
     });
   }
 

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:otp_list/core/consts.dart';
 import 'package:otp_list/features/otp/list/otp_list_component.dart';
@@ -28,6 +30,7 @@ class _State extends State<OtpScreen> {
     return ValueListenableBuilder<bool>(
       valueListenable: interactor.isReady,
       builder: (context, value, _) {
+        interactor.messages.listen((message) => _showSnack(context, message));
         return Scaffold(
           appBar: AppBar(
             title: const Text(APP_NAME),
@@ -46,6 +49,16 @@ class _State extends State<OtpScreen> {
               : const SizedBox.shrink(),
         );
       },
+    );
+  }
+
+  void _showSnack(BuildContext context, String message) {
+    log('show error');
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: Colors.red,
+        content: Text(message),
+      ),
     );
   }
 }

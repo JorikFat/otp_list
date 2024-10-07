@@ -1,4 +1,5 @@
 import 'package:otp_list/core/extensions.dart';
+import 'package:otp_list/features/otp/domain/duplicate_exception.dart';
 import 'package:otp_list/features/otp/domain/otp_storage.dart';
 import 'package:otp_list/features/otp/otp.dart';
 
@@ -13,9 +14,11 @@ class OtpController {
     savedCodes?.let((it) => codes.addAll(it.map((it) => it.otp)));
   }
 
-  //TODO: throw duplicate exception
   Future<Otp> add(String token) async {
     final Otp newOtp = token.otp;
+    if (codes.contains(newOtp)) {
+      throw DuplicateException();
+    }
     codes.add(newOtp);
     final savedTokens = (await _storage.read()) ?? List.empty();
     _storage.save([...savedTokens, token]);

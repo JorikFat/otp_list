@@ -2,7 +2,7 @@ import 'dart:async';
 
 class OtpTimer {
   int value = 30;
-  final _controller = StreamController<int>();
+  final _controller = StreamController<int>.broadcast();
 
   Future<void> start() async {
     final nowSeconds = DateTime.now().second;
